@@ -1,0 +1,14 @@
+name: interposer
+type: passive
+area: 1.0e-6
+voltage: 1.7
+clock: 3
+
+tech:
+  interposer_type: Organic
+  line_type: Stripline
+  dielec_type: Polyimide
+  wire_pitch: 12
+  wire_ar: 1
+  num_rdl_layers: 1
+  technode: 45

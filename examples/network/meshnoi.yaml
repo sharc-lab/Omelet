@@ -1,0 +1,14 @@
+hierarchy: "noi"
+repeater: "no"
+topology: "mesh"
+num_routers: 64
+mesh_rows: 8
+routing: "dim_order"
+traffic: "uniform"
+type: "active"
+
+router:
+  concentration: 1
+  misalined: true
+  latency: 1
+  width: 0.001

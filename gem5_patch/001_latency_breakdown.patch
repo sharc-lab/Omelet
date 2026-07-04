@@ -1,0 +1,84 @@
+diff --git a/src/mem/ruby/network/garnet/flit.cc b/src/mem/ruby/network/garnet/flit.cc
+index d31d826..d3fe412 100644
+--- a/src/mem/ruby/network/garnet/flit.cc
++++ b/src/mem/ruby/network/garnet/flit.cc
+@@ -60,6 +60,13 @@ flit::flit(int packet_id, int id, int  vc, int vnet, RouteInfo route, int size,
+     m_stage.second = curTime;
+     m_width = bWidth;
+     msgSize = MsgSize;
++    src_delay = 0;
++    onchip_delay = 0;
++    offchip_delay = 0;
++    serdes_delay = 0;
++    router_enter_time = 0;
++    router_pipeline_delay = 0;
++    router_contention_delay = 0;
+ 
+     if (size == 1) {
+         m_type = HEAD_TAIL_;
+@@ -87,6 +94,11 @@ flit::serialize(int ser_id, int parts, uint32_t bWidth)
+                     new_size, m_msg_ptr, msgSize, bWidth, m_time);
+     fl->set_enqueue_time(m_enqueue_time);
+     fl->set_src_delay(src_delay);
++    fl->add_onchip_delay(onchip_delay);
++    fl->add_offchip_delay(offchip_delay);
++    fl->add_serdes_delay(serdes_delay);
++    fl->add_router_pipeline_delay(router_pipeline_delay);
++    fl->add_router_contention_delay(router_contention_delay);
+     return fl;
+ }
+ 
+@@ -102,6 +114,11 @@ flit::deserialize(int des_id, int num_flits, uint32_t bWidth)
+                     new_size, m_msg_ptr, msgSize, bWidth, m_time);
+     fl->set_enqueue_time(m_enqueue_time);
+     fl->set_src_delay(src_delay);
++    fl->add_onchip_delay(onchip_delay);
++    fl->add_offchip_delay(offchip_delay);
++    fl->add_serdes_delay(serdes_delay);
++    fl->add_router_pipeline_delay(router_pipeline_delay);
++    fl->add_router_contention_delay(router_contention_delay);
+     return fl;
+ }
+ 
+diff --git a/src/mem/ruby/network/garnet/flit.hh b/src/mem/ruby/network/garnet/flit.hh
+index a52d741..44339a8 100644
+--- a/src/mem/ruby/network/garnet/flit.hh
++++ b/src/mem/ruby/network/garnet/flit.hh
+@@ -70,12 +70,24 @@ class flit
+     flit_type get_type() { return m_type; }
+     std::pair<flit_stage, Tick> get_stage() { return m_stage; }
+     Tick get_src_delay() { return src_delay; }
++    Tick get_onchip_delay() { return onchip_delay; }
++    Tick get_offchip_delay() { return offchip_delay; }
++    Tick get_serdes_delay() { return serdes_delay; }
++    Tick get_router_pipeline_delay() { return router_pipeline_delay; }
++    Tick get_router_contention_delay() { return router_contention_delay; }
++    Tick get_router_enter_time() { return router_enter_time; }
+ 
+     void set_outport(int port) { m_outport = port; }
+     void set_time(Tick time) { m_time = time; }
+     void set_vc(int vc) { m_vc = vc; }
+     void set_route(RouteInfo route) { m_route = route; }
+     void set_src_delay(Tick delay) { src_delay = delay; }
++    void set_router_enter_time(Tick time) { router_enter_time = time; }
++    void add_onchip_delay(Tick delay) { onchip_delay += delay; }
++    void add_offchip_delay(Tick delay) { offchip_delay += delay; }
++    void add_serdes_delay(Tick delay) { serdes_delay += delay; }
++    void add_router_pipeline_delay(Tick delay) { router_pipeline_delay += delay; }
++    void add_router_contention_delay(Tick delay) { router_contention_delay += delay; }
+     void set_dequeue_time(Tick time) { m_dequeue_time = time; }
+     void set_enqueue_time(Tick time) { m_enqueue_time = time; }
+ 
+@@ -128,6 +140,12 @@ class flit
+     MsgPtr m_msg_ptr;
+     int m_outport;
+     Tick src_delay;
++    Tick onchip_delay;
++    Tick offchip_delay;
++    Tick serdes_delay;
++    Tick router_enter_time;
++    Tick router_pipeline_delay;
++    Tick router_contention_delay;
+     std::pair<flit_stage, Tick> m_stage;
+ };
+ 

@@ -1,0 +1,29 @@
+[project]
+name = "omelet"
+version = "0.1.0"
+description = "Packaging-aware hierarchical interconnect simulator for 2.5D/3D chiplets"
+requires-python = ">=3.8"
+dependencies = ["pyyaml", "numpy", "matplotlib"]
+
+[project.scripts]
+omelet-run = "omelet.cli:main"
+omelet-dse = "omelet.dse.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["omelet*"]
+
+# Ship the technology-library YAML tables (omelet/techlib/**) as package data so
+# `pip install omelet` carries the tables that feed the simulator.
+[tool.setuptools.package-data]
+omelet = [
+    "techlib/**/*.yaml",
+    "techlib/**/*.yml",
+]
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'

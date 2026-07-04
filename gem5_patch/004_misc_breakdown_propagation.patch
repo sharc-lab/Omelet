@@ -1,0 +1,360 @@
+diff --git a/src/mem/ruby/network/garnet/CrossbarSwitch.cc b/src/mem/ruby/network/garnet/CrossbarSwitch.cc
+index b4d6696..6f1fd44 100644
+--- a/src/mem/ruby/network/garnet/CrossbarSwitch.cc
++++ b/src/mem/ruby/network/garnet/CrossbarSwitch.cc
+@@ -78,6 +78,13 @@ CrossbarSwitch::wakeup()
+         if (t_flit->is_stage(ST_, curTick())) {
+             int outport = t_flit->get_outport();
+ 
++            Tick router_delay_this_hop = m_router->clockEdge(Cycles(1)) - t_flit->get_router_enter_time();
++            Tick pipe_stages_delay = m_router->cyclesToTicks(m_router->get_pipe_stages());
++            t_flit->add_router_pipeline_delay(pipe_stages_delay);
++            if (router_delay_this_hop > pipe_stages_delay) {
++                t_flit->add_router_contention_delay(router_delay_this_hop - pipe_stages_delay);
++            }
++
+             // flit performs LT_ in the next cycle
+             t_flit->advance_stage(LT_, m_router->clockEdge(Cycles(1)));
+             t_flit->set_time(m_router->clockEdge(Cycles(1)));
+diff --git a/src/mem/ruby/network/garnet/GarnetNetwork.cc b/src/mem/ruby/network/garnet/GarnetNetwork.cc
+index 5792269..51af38c 100644
+--- a/src/mem/ruby/network/garnet/GarnetNetwork.cc
++++ b/src/mem/ruby/network/garnet/GarnetNetwork.cc
+@@ -413,11 +413,32 @@ GarnetNetwork::regStats()
+         .flags(statistics::oneline)
+         ;
+ 
++    m_packet_onchip_latency
++        .init(m_virtual_networks)
++        .name(name() + ".packet_onchip_latency")
++        .flags(statistics::oneline)
++        ;
++
++    m_packet_offchip_latency
++        .init(m_virtual_networks)
++        .name(name() + ".packet_offchip_latency")
++        .flags(statistics::oneline)
++        ;
++
++    m_packet_serdes_latency
++        .init(m_virtual_networks)
++        .name(name() + ".packet_serdes_latency")
++        .flags(statistics::oneline)
++        ;
++
+     for (int i = 0; i < m_virtual_networks; i++) {
+         m_packets_received.subname(i, csprintf("vnet-%i", i));
+         m_packets_injected.subname(i, csprintf("vnet-%i", i));
+         m_packet_network_latency.subname(i, csprintf("vnet-%i", i));
+         m_packet_queueing_latency.subname(i, csprintf("vnet-%i", i));
++        m_packet_onchip_latency.subname(i, csprintf("vnet-%i", i));
++        m_packet_offchip_latency.subname(i, csprintf("vnet-%i", i));
++        m_packet_serdes_latency.subname(i, csprintf("vnet-%i", i));
+     }
+ 
+     m_avg_packet_vnet_latency
+@@ -442,6 +463,21 @@ GarnetNetwork::regStats()
+     m_avg_packet_queueing_latency
+         = sum(m_packet_queueing_latency) / sum(m_packets_received);
+ 
++    m_avg_packet_onchip_latency
++        .name(name() + ".average_packet_onchip_latency");
++    m_avg_packet_onchip_latency =
++        sum(m_packet_onchip_latency) / sum(m_packets_received);
++
++    m_avg_packet_offchip_latency
++        .name(name() + ".average_packet_offchip_latency");
++    m_avg_packet_offchip_latency =
++        sum(m_packet_offchip_latency) / sum(m_packets_received);
++
++    m_avg_packet_serdes_latency
++        .name(name() + ".average_packet_serdes_latency");
++    m_avg_packet_serdes_latency =
++        sum(m_packet_serdes_latency) / sum(m_packets_received);
++
+     m_avg_packet_latency
+         .name(name() + ".average_packet_latency");
+     m_avg_packet_latency
+@@ -474,11 +510,46 @@ GarnetNetwork::regStats()
+         .flags(statistics::oneline)
+         ;
+ 
++    m_flit_onchip_latency
++        .init(m_virtual_networks)
++        .name(name() + ".flit_onchip_latency")
++        .flags(statistics::oneline)
++        ;
++
++    m_flit_offchip_latency
++        .init(m_virtual_networks)
++        .name(name() + ".flit_offchip_latency")
++        .flags(statistics::oneline)
++        ;
++
++    m_flit_serdes_latency
++        .init(m_virtual_networks)
++        .name(name() + ".flit_serdes_latency")
++        .flags(statistics::oneline)
++        ;
++
++    m_flit_router_pipeline_latency
++        .init(m_virtual_networks)
++        .name(name() + ".flit_router_pipeline_latency")
++        .flags(statistics::oneline)
++        ;
++
++    m_flit_router_contention_latency
++        .init(m_virtual_networks)
++        .name(name() + ".flit_router_contention_latency")
++        .flags(statistics::oneline)
++        ;
++
+     for (int i = 0; i < m_virtual_networks; i++) {
+         m_flits_received.subname(i, csprintf("vnet-%i", i));
+         m_flits_injected.subname(i, csprintf("vnet-%i", i));
+         m_flit_network_latency.subname(i, csprintf("vnet-%i", i));
+         m_flit_queueing_latency.subname(i, csprintf("vnet-%i", i));
++        m_flit_onchip_latency.subname(i, csprintf("vnet-%i", i));
++        m_flit_offchip_latency.subname(i, csprintf("vnet-%i", i));
++        m_flit_serdes_latency.subname(i, csprintf("vnet-%i", i));
++        m_flit_router_pipeline_latency.subname(i, csprintf("vnet-%i", i));
++        m_flit_router_contention_latency.subname(i, csprintf("vnet-%i", i));
+     }
+ 
+     m_avg_flit_vnet_latency
+@@ -502,6 +573,31 @@ GarnetNetwork::regStats()
+     m_avg_flit_queueing_latency =
+         sum(m_flit_queueing_latency) / sum(m_flits_received);
+ 
++    m_avg_flit_onchip_latency
++        .name(name() + ".average_flit_onchip_latency");
++    m_avg_flit_onchip_latency =
++        sum(m_flit_onchip_latency) / sum(m_flits_received);
++
++    m_avg_flit_offchip_latency
++        .name(name() + ".average_flit_offchip_latency");
++    m_avg_flit_offchip_latency =
++        sum(m_flit_offchip_latency) / sum(m_flits_received);
++
++    m_avg_flit_serdes_latency
++        .name(name() + ".average_flit_serdes_latency");
++    m_avg_flit_serdes_latency =
++        sum(m_flit_serdes_latency) / sum(m_flits_received);
++
++    m_avg_flit_router_pipeline_latency
++        .name(name() + ".average_flit_router_pipeline_latency");
++    m_avg_flit_router_pipeline_latency =
++        sum(m_flit_router_pipeline_latency) / sum(m_flits_received);
++
++    m_avg_flit_router_contention_latency
++        .name(name() + ".average_flit_router_contention_latency");
++    m_avg_flit_router_contention_latency =
++        sum(m_flit_router_contention_latency) / sum(m_flits_received);
++
+     m_avg_flit_latency
+         .name(name() + ".average_flit_latency");
+     m_avg_flit_latency =
+diff --git a/src/mem/ruby/network/garnet/GarnetNetwork.hh b/src/mem/ruby/network/garnet/GarnetNetwork.hh
+index db37628..2a50126 100644
+--- a/src/mem/ruby/network/garnet/GarnetNetwork.hh
++++ b/src/mem/ruby/network/garnet/GarnetNetwork.hh
+@@ -133,6 +133,21 @@ class GarnetNetwork : public Network
+         m_packet_queueing_latency[vnet] += latency;
+     }
+ 
++    void increment_packet_onchip_latency(Tick latency, int vnet)
++    {
++        m_packet_onchip_latency[vnet] += latency;
++    }
++
++    void increment_packet_offchip_latency(Tick latency, int vnet)
++    {
++        m_packet_offchip_latency[vnet] += latency;
++    }
++
++    void increment_packet_serdes_latency(Tick latency, int vnet)
++    {
++        m_packet_serdes_latency[vnet] += latency;
++    }
++
+     void increment_injected_flits(int vnet) { m_flits_injected[vnet]++; }
+     void increment_received_flits(int vnet) { m_flits_received[vnet]++; }
+ 
+@@ -148,6 +163,31 @@ class GarnetNetwork : public Network
+         m_flit_queueing_latency[vnet] += latency;
+     }
+ 
++    void increment_flit_onchip_latency(Tick latency, int vnet)
++    {
++        m_flit_onchip_latency[vnet] += latency;
++    }
++
++    void increment_flit_offchip_latency(Tick latency, int vnet)
++    {
++        m_flit_offchip_latency[vnet] += latency;
++    }
++
++    void increment_flit_serdes_latency(Tick latency, int vnet)
++    {
++        m_flit_serdes_latency[vnet] += latency;
++    }
++
++    void increment_flit_router_pipeline_latency(Tick latency, int vnet)
++    {
++        m_flit_router_pipeline_latency[vnet] += latency;
++    }
++
++    void increment_flit_router_contention_latency(Tick latency, int vnet)
++    {
++        m_flit_router_contention_latency[vnet] += latency;
++    }
++
+     void
+     increment_total_hops(int hops)
+     {
+@@ -167,28 +207,46 @@ class GarnetNetwork : public Network
+     uint32_t m_buffers_per_data_vc;
+     int m_routing_algorithm;
+     bool m_enable_fault_model;
++    std::string m_role; // Hierarchy level: noc, noi, nol, nox...
++
+ 
+     // Statistical variables
+     statistics::Vector m_packets_received;
+     statistics::Vector m_packets_injected;
+     statistics::Vector m_packet_network_latency;
+     statistics::Vector m_packet_queueing_latency;
++    statistics::Vector m_packet_onchip_latency;
++    statistics::Vector m_packet_offchip_latency;
++    statistics::Vector m_packet_serdes_latency;
+ 
+     statistics::Formula m_avg_packet_vnet_latency;
+     statistics::Formula m_avg_packet_vqueue_latency;
+     statistics::Formula m_avg_packet_network_latency;
+     statistics::Formula m_avg_packet_queueing_latency;
++    statistics::Formula m_avg_packet_onchip_latency;
++    statistics::Formula m_avg_packet_offchip_latency;
++    statistics::Formula m_avg_packet_serdes_latency;
+     statistics::Formula m_avg_packet_latency;
+ 
+     statistics::Vector m_flits_received;
+     statistics::Vector m_flits_injected;
+     statistics::Vector m_flit_network_latency;
+     statistics::Vector m_flit_queueing_latency;
++    statistics::Vector m_flit_onchip_latency;
++    statistics::Vector m_flit_offchip_latency;
++    statistics::Vector m_flit_serdes_latency;
++    statistics::Vector m_flit_router_pipeline_latency;
++    statistics::Vector m_flit_router_contention_latency;
+ 
+     statistics::Formula m_avg_flit_vnet_latency;
+     statistics::Formula m_avg_flit_vqueue_latency;
+     statistics::Formula m_avg_flit_network_latency;
+     statistics::Formula m_avg_flit_queueing_latency;
++    statistics::Formula m_avg_flit_onchip_latency;
++    statistics::Formula m_avg_flit_offchip_latency;
++    statistics::Formula m_avg_flit_serdes_latency;
++    statistics::Formula m_avg_flit_router_pipeline_latency;
++    statistics::Formula m_avg_flit_router_contention_latency;
+     statistics::Formula m_avg_flit_latency;
+ 
+     statistics::Scalar m_total_ext_in_link_utilization;
+diff --git a/src/mem/ruby/network/garnet/GarnetNetwork.py b/src/mem/ruby/network/garnet/GarnetNetwork.py
+index 1281183..763ed53 100644
+--- a/src/mem/ruby/network/garnet/GarnetNetwork.py
++++ b/src/mem/ruby/network/garnet/GarnetNetwork.py
+@@ -83,3 +83,5 @@ class GarnetRouter(BasicRouter):
+     width = Param.UInt32(
+         Parent.ni_flit_size, "bit width supported by the router"
+     )
++    role        = Param.String("noc", "Hierarchy level {noc|noi|nol}") 
++
+diff --git a/src/mem/ruby/network/garnet/InputUnit.cc b/src/mem/ruby/network/garnet/InputUnit.cc
+index 179bb64..e38f843 100644
+--- a/src/mem/ruby/network/garnet/InputUnit.cc
++++ b/src/mem/ruby/network/garnet/InputUnit.cc
+@@ -109,6 +109,7 @@ InputUnit::wakeup()
+ 
+         // Buffer the flit
+         virtualChannels[vc].insertFlit(t_flit);
++        t_flit->set_router_enter_time(curTick());
+ 
+         int vnet = vc/m_vc_per_vnet;
+         // number of writes same as reads
+diff --git a/src/mem/ruby/network/garnet/NetworkBridge.cc b/src/mem/ruby/network/garnet/NetworkBridge.cc
+index 9412b5b..a463c66 100644
+--- a/src/mem/ruby/network/garnet/NetworkBridge.cc
++++ b/src/mem/ruby/network/garnet/NetworkBridge.cc
+@@ -99,6 +99,10 @@ void
+ NetworkBridge::scheduleFlit(flit *t_flit, Cycles latency)
+ {
+     Cycles totLatency = latency;
++    if (enSerDes && t_flit->get_type() != CREDIT_) {
++        t_flit->add_serdes_delay(
++            link_consumer->getObject()->cyclesToTicks(latency));
++    }
+ 
+     if (enCdc) {
+         // Add the CDC latency
+diff --git a/src/mem/ruby/network/garnet/NetworkInterface.cc b/src/mem/ruby/network/garnet/NetworkInterface.cc
+index 31d625c..aa7971c 100644
+--- a/src/mem/ruby/network/garnet/NetworkInterface.cc
++++ b/src/mem/ruby/network/garnet/NetworkInterface.cc
+@@ -166,11 +166,23 @@ NetworkInterface::incrementStats(flit *t_flit)
+ 
+     m_net_ptr->increment_flit_network_latency(network_delay, vnet);
+     m_net_ptr->increment_flit_queueing_latency(queueing_delay, vnet);
++    m_net_ptr->increment_flit_onchip_latency(t_flit->get_onchip_delay(), vnet);
++    m_net_ptr->increment_flit_offchip_latency(
++        t_flit->get_offchip_delay(), vnet);
++    m_net_ptr->increment_flit_serdes_latency(t_flit->get_serdes_delay(), vnet);
++    m_net_ptr->increment_flit_router_pipeline_latency(t_flit->get_router_pipeline_delay(), vnet);
++    m_net_ptr->increment_flit_router_contention_latency(t_flit->get_router_contention_delay(), vnet);
+ 
+     if (t_flit->get_type() == TAIL_ || t_flit->get_type() == HEAD_TAIL_) {
+         m_net_ptr->increment_received_packets(vnet);
+         m_net_ptr->increment_packet_network_latency(network_delay, vnet);
+         m_net_ptr->increment_packet_queueing_latency(queueing_delay, vnet);
++        m_net_ptr->increment_packet_onchip_latency(
++            t_flit->get_onchip_delay(), vnet);
++        m_net_ptr->increment_packet_offchip_latency(
++            t_flit->get_offchip_delay(), vnet);
++        m_net_ptr->increment_packet_serdes_latency(
++            t_flit->get_serdes_delay(), vnet);
+     }
+ 
+     // Hops
+diff --git a/src/mem/ruby/network/garnet/Router.cc b/src/mem/ruby/network/garnet/Router.cc
+index 5232b91..2dc03a4 100644
+--- a/src/mem/ruby/network/garnet/Router.cc
++++ b/src/mem/ruby/network/garnet/Router.cc
+@@ -53,7 +53,8 @@ Router::Router(const Params &p)
+     m_virtual_networks(p.virt_nets), m_vc_per_vnet(p.vcs_per_vnet),
+     m_num_vcs(m_virtual_networks * m_vc_per_vnet), m_bit_width(p.width),
+     m_network_ptr(nullptr), routingUnit(this), switchAllocator(this),
+-    crossbarSwitch(this)
++    crossbarSwitch(this),
++    m_role(p.role)
+ {
+     m_input_unit.clear();
+     m_output_unit.clear();
+diff --git a/src/mem/ruby/network/garnet/Router.hh b/src/mem/ruby/network/garnet/Router.hh
+index dbcdda9..054573b 100644
+--- a/src/mem/ruby/network/garnet/Router.hh
++++ b/src/mem/ruby/network/garnet/Router.hh
+@@ -112,6 +112,7 @@ class Router : public BasicRouter, public Consumer
+     }
+ 
+     int getBitWidth() { return m_bit_width; }
++    const std::string& role() const { return m_role; }
+ 
+     PortDirection getOutportDirection(int outport);
+     PortDirection getInportDirection(int inport);
+@@ -147,6 +148,7 @@ class Router : public BasicRouter, public Consumer
+     uint32_t m_virtual_networks, m_vc_per_vnet, m_num_vcs;
+     uint32_t m_bit_width;
+     GarnetNetwork *m_network_ptr;
++    std::string m_role;
+ 
+     RoutingUnit routingUnit;
+     SwitchAllocator switchAllocator;

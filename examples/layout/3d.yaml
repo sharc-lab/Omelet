@@ -1,0 +1,64 @@
+chiplets: 8
+layers: 2
+
+placement:
+  chiplet0:
+    x: 0
+    y: 0
+    z: 0
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+  chiplet1:
+    x: 0
+    y: 1
+    z: 0
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+  chiplet2:
+    x: 1
+    y: 0
+    z: 0
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+  chiplet3:
+    x: 1
+    y: 1
+    z: 0
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+  chiplet4:
+    x: 0
+    y: 0
+    z: 1
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+  chiplet5:
+    x: 0
+    y: 1
+    z: 1
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+  chiplet6:
+    x: 1
+    y: 0
+    z: 1
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+  chiplet7:
+    x: 1
+    y: 1
+    z: 1
+    angle_deg: 0
+    width: 4.0
+    height: 4.0
+
+die2die_spacing: 1e-4
+router2router_spacing: 1e-3
+chiplet_keepout: 50e-6

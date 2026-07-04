@@ -1,0 +1,32 @@
+# =============================================================================
+# Omelet technology library -- interposer link LATENCY table
+# -----------------------------------------------------------------------------
+#   Interposer material : Silicon interposer; SiO2 (damascene RDL, stripline)
+#   RDL wire pitch      : 3 um, 1 RDL layer; 45 nm-class driver
+#   Bonding type        : Hybrid (face-to-face) bond, ~1 um bond pitch
+#   Units               : ps (picoseconds)
+#   Index               : interposer link-length bucket; key len_<N>mm = N mm hop
+#   Provenance          : Technology parameters extracted offline via full-wave EM
+#                         (Ansys HFSS) + SPICE, per Omelet section IV-B; indexed by
+#                         interposer link length. NOT recomputed during simulation.
+# =============================================================================
+metadata:
+  quantity: link_one_way_latency
+  units: ps
+  interposer_material: silicon
+  dielectric: SiO2
+  rdl_wire_pitch_um: 3
+  rdl_layers: 1
+  bonding: hybrid
+  bond_pitch_um: 1
+  index: interposer_link_length_mm
+  operating_freq_ghz: 3
+  extraction: "Ansys HFSS full-wave EM + SPICE (offline; Omelet section IV-B)"
+
+# Interposer one-way link latency [ps] vs link-length bucket [mm]
+len_1mm: 127.44
+len_2mm: 155.40
+len_3mm: 185.51
+len_4mm: 214.72
+len_5mm: 243.64
+len_6mm: 272.99

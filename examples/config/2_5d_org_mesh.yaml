@@ -1,0 +1,18 @@
+layout: "layout/2_5d.yaml"
+
+tech:
+  chiplet: "tech/chiplet.yaml"
+  interposer: "tech/interposer_org.yaml"
+
+network:
+  noi: "network/meshnoi.yaml"
+  noc: "network/noc.yaml"
+  params: "network/network_2_5d.yaml"
+
+system: "system/system_2_5d.yaml"
+placement: "placement/place_model_2_5d.yaml"
+
+simulation:
+  traffic: shuffle
+  injection_rate: 0.1
+  sim_cycles: 1000000

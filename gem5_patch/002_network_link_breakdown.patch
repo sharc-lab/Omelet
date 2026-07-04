@@ -1,0 +1,78 @@
+diff --git a/src/mem/ruby/network/garnet/NetworkLink.cc b/src/mem/ruby/network/garnet/NetworkLink.cc
+index 43bb6c3..85212e2 100644
+--- a/src/mem/ruby/network/garnet/NetworkLink.cc
++++ b/src/mem/ruby/network/garnet/NetworkLink.cc
+@@ -49,6 +49,9 @@ NetworkLink::NetworkLink(const Params &p)
+     : ClockedObject(p), Consumer(this), m_id(p.link_id),
+       m_type(NUM_LINK_TYPES_),
+       m_latency(p.link_latency), m_link_utilized(0),
++      m_onchip_component_latency(p.onchip_component_latency),
++      m_offchip_component_latency(p.offchip_component_latency),
++      m_serdes_component_latency(p.serdes_component_latency),
+       m_virt_nets(p.virt_nets), linkBuffer(),
+       link_consumer(nullptr), link_srcQueue(nullptr)
+ {
+@@ -58,6 +61,11 @@ NetworkLink::NetworkLink(const Params &p)
+     for (int i = 0; i < num_vnets; i++) {
+         mVnets[i] = p.supported_vnets[i];
+     }
++
++    linkUtilStat
++        .name(name() + ".link_utilization")
++        .desc("Number of flits sent through this link")
++        .flags(Stats::total);
+ }
+ 
+ void
+@@ -97,11 +105,16 @@ NetworkLink::wakeup()
+                 t_flit->get_vnet()) != mVnets.end()) ||
+                 (mVnets.size() == 0));
+         }
++        t_flit->add_onchip_delay(cyclesToTicks(m_onchip_component_latency));
++        t_flit->add_offchip_delay(cyclesToTicks(m_offchip_component_latency));
++        t_flit->add_serdes_delay(cyclesToTicks(m_serdes_component_latency));
+         t_flit->set_time(clockEdge(m_latency));
+         linkBuffer.insert(t_flit);
+         link_consumer->scheduleEventAbsolute(clockEdge(m_latency));
+         m_link_utilized++;
+         m_vc_load[t_flit->get_vc()]++;
++
++        linkUtilStat = m_link_utilized;
+     }
+ 
+     if (!link_srcQueue->isEmpty()) {
+@@ -117,6 +130,7 @@ NetworkLink::resetStats()
+     }
+ 
+     m_link_utilized = 0;
++    linkUtilStat = 0;
+ }
+ 
+ bool
+diff --git a/src/mem/ruby/network/garnet/NetworkLink.hh b/src/mem/ruby/network/garnet/NetworkLink.hh
+index b60a513..bf65212 100644
+--- a/src/mem/ruby/network/garnet/NetworkLink.hh
++++ b/src/mem/ruby/network/garnet/NetworkLink.hh
+@@ -41,6 +41,7 @@
+ #include "mem/ruby/network/garnet/flitBuffer.hh"
+ #include "params/NetworkLink.hh"
+ #include "sim/clocked_object.hh"
++#include "sim/stats.hh"  // Add if not already
+ 
+ namespace gem5
+ {
+@@ -88,10 +89,14 @@ class NetworkLink : public ClockedObject, public Consumer
+     std::vector<int> mVnets;
+     uint32_t bitWidth;
+ 
++    gem5::Stats::Scalar linkUtilStat;
+   private:
+     const int m_id;
+     link_type m_type;
+     const Cycles m_latency;
++    const Cycles m_onchip_component_latency;
++    const Cycles m_offchip_component_latency;
++    const Cycles m_serdes_component_latency;
+ 
+     ClockedObject *src_object;
+ 

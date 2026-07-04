@@ -1,0 +1,28 @@
+# =============================================================================
+# Omelet technology library -- 3D vertical-hop LATENCY table
+# -----------------------------------------------------------------------------
+#   Integration   : 3D chip-to-chip stack (F2F)
+#   Orientation   : Face-to-face; TSV does not traverse the die before the bonding interface
+#   Substrate     : Passive silicon; SiO2
+#   Bonding type  : Micro-bump, ~10 um bond pitch
+#   Units         : ps (picoseconds)
+#   Value         : single stacked vertical hop; length-independent (no lateral RDL sweep)
+#   Provenance    : Technology parameters extracted offline via full-wave EM
+#                   (Ansys HFSS) + SPICE, per Omelet section IV-B.
+#                   NOT recomputed during simulation.
+# =============================================================================
+metadata:
+  quantity: link_one_way_latency
+  units: ps
+  integration: 3D_chip_to_chip
+  orientation: F2F
+  substrate: silicon_passive
+  dielectric: SiO2
+  bonding: ubump
+  bond_pitch_um: 10
+  technode_nm: 45
+  operating_freq_ghz: 3
+  extraction: "Ansys HFSS full-wave EM + SPICE (offline; Omelet section IV-B)"
+
+# 3D vertical-hop one-way latency [ps] -- single stacked hop
+value: 92.2

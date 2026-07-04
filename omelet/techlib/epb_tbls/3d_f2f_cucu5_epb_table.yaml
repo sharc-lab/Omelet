@@ -1,0 +1,28 @@
+# =============================================================================
+# Omelet technology library -- 3D vertical-hop ENERGY-PER-BIT (EPB) table
+# -----------------------------------------------------------------------------
+#   Integration   : 3D chip-to-chip stack (F2F)
+#   Orientation   : Face-to-face; TSV does not traverse the die before the bonding interface
+#   Substrate     : Passive silicon; SiO2
+#   Bonding type  : Cu-Cu hybrid bond, ~5 um bond pitch
+#   Units         : pJ/bit (picojoules per bit)
+#   Value         : single stacked vertical hop; length-independent (no lateral RDL sweep)
+#   Provenance    : Technology parameters extracted offline via full-wave EM
+#                   (Ansys HFSS) + SPICE, per Omelet section IV-B.
+#                   NOT recomputed during simulation.
+# =============================================================================
+metadata:
+  quantity: energy_per_bit
+  units: pJ/bit
+  integration: 3D_chip_to_chip
+  orientation: F2F
+  substrate: silicon_passive
+  dielectric: SiO2
+  bonding: cucu
+  bond_pitch_um: 5
+  technode_nm: 45
+  operating_freq_ghz: 3
+  extraction: "Ansys HFSS full-wave EM + SPICE (offline; Omelet section IV-B)"
+
+# 3D vertical-hop energy-per-bit [pJ/bit] -- single stacked hop
+value: 0.1420015

@@ -1,0 +1,13 @@
+
+hierarchy: "nol"
+topology: "mesh"
+rows: 2
+routing: "dim_order"
+traffic: "uniform"
+injection_rate: 0.15
+
+router:
+  concentration: 4
+  rows: 2
+  misalined: true
+  latency: 1

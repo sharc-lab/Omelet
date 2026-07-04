@@ -1,0 +1,32 @@
+# =============================================================================
+# Omelet technology library -- interposer link LATENCY table
+# -----------------------------------------------------------------------------
+#   Interposer material : Organic interposer; Polyimide (build-up RDL, stripline)
+#   RDL wire pitch      : 12 um, 1 RDL layer; 45 nm-class driver
+#   Bonding type        : Micro-bump; 30 um (ubump30, baseline), also 10 um (ubump10) in bonding sweep
+#   Units               : ps (picoseconds)
+#   Index               : interposer link-length bucket; key len_<N>mm = N mm hop
+#   Provenance          : Technology parameters extracted offline via full-wave EM
+#                         (Ansys HFSS) + SPICE, per Omelet section IV-B; indexed by
+#                         interposer link length. NOT recomputed during simulation.
+# =============================================================================
+metadata:
+  quantity: link_one_way_latency
+  units: ps
+  interposer_material: organic
+  dielectric: Polyimide
+  rdl_wire_pitch_um: 12
+  rdl_layers: 1
+  bonding: ubump
+  bond_pitch_um: 30        # baseline ubump30; also 10 um (ubump10) in the bonding sweep
+  index: interposer_link_length_mm
+  operating_freq_ghz: 3
+  extraction: "Ansys HFSS full-wave EM + SPICE (offline; Omelet section IV-B)"
+
+# Interposer one-way link latency [ps] vs link-length bucket [mm]
+len_1mm: 115.74
+len_2mm: 126.33
+len_3mm: 135.86
+len_4mm: 144.71
+len_5mm: 153.68
+len_6mm: 163.47

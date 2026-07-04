@@ -1,0 +1,46 @@
+diff --git a/src/mem/ruby/network/garnet/GarnetLink.py b/src/mem/ruby/network/garnet/GarnetLink.py
+index 3cc44e4..79060ad 100644
+--- a/src/mem/ruby/network/garnet/GarnetLink.py
++++ b/src/mem/ruby/network/garnet/GarnetLink.py
+@@ -42,6 +42,8 @@ class NetworkLink(ClockedObject):
+ 
+     link_id = Param.Int(Parent.link_id, "link id")
+     link_latency = Param.Cycles(Parent.latency, "link latency")
++    serdes_latency = Param.Cycles(Parent.serdes_latency, "serdes latency component")
++    is_off_chip = Param.Bool(Parent.is_off_chip, "true if off chiplet")
+     vcs_per_vnet = Param.Int(
+         Parent.vcs_per_vnet, "virtual channels per virtual network"
+     )
+@@ -52,6 +54,15 @@ class NetworkLink(ClockedObject):
+         Parent.supported_vnets, "Vnets supported"
+     )
+     width = Param.UInt32(Parent.width, "bit-width of the link")
++    onchip_component_latency = Param.Cycles(
++        Parent.onchip_component_latency, "On-chip latency contribution"
++    )
++    offchip_component_latency = Param.Cycles(
++        Parent.offchip_component_latency, "Off-chip latency contribution"
++    )
++    serdes_component_latency = Param.Cycles(
++        Parent.serdes_component_latency, "SerDes latency contribution"
++    )
+ 
+ 
+ class CreditLink(NetworkLink):
+@@ -112,6 +123,9 @@ class GarnetIntLink(BasicIntLink):
+     width = Param.UInt32(
+         Parent.ni_flit_size, "bit width supported by the router"
+     )
++    onchip_component_latency = Param.Cycles(0, "On-chip latency contribution")
++    offchip_component_latency = Param.Cycles(0, "Off-chip latency contribution")
++    serdes_component_latency = Param.Cycles(0, "SerDes latency contribution")
+ 
+ 
+ # Exterior fixed pipeline links between a router and a controller
+@@ -174,3 +188,6 @@ class GarnetExtLink(BasicExtLink):
+     width = Param.UInt32(
+         Parent.ni_flit_size, "bit width supported by the router"
+     )
++    onchip_component_latency = Param.Cycles(0, "On-chip latency contribution")
++    offchip_component_latency = Param.Cycles(0, "Off-chip latency contribution")
++    serdes_component_latency = Param.Cycles(0, "SerDes latency contribution")

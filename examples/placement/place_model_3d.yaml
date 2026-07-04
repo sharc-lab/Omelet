@@ -1,0 +1,243 @@
+pitch_m: 0.001
+chiplet_keepout: 5.0e-05
+stack: 2
+rows: 2
+cols: 2
+chiplets:
+  chiplet0:
+    logical:
+    - 0
+    - 0
+    - 0
+    physical_m:
+    - 0.0
+    - 0.0
+    - 0.0
+    width: 4.0
+    height: 4.0
+    tier: 0
+  chiplet1:
+    logical:
+    - 0
+    - 1
+    - 0
+    physical_m:
+    - 0.0
+    - 4.0001
+    - 0.0
+    width: 4.0
+    height: 4.0
+    tier: 0
+  chiplet2:
+    logical:
+    - 1
+    - 0
+    - 0
+    physical_m:
+    - 4.0001
+    - 0.0
+    - 0.0
+    width: 4.0
+    height: 4.0
+    tier: 0
+  chiplet3:
+    logical:
+    - 1
+    - 1
+    - 0
+    physical_m:
+    - 4.0001
+    - 4.0001
+    - 0.0
+    width: 4.0
+    height: 4.0
+    tier: 0
+  chiplet4:
+    logical:
+    - 0
+    - 0
+    - 1
+    physical_m:
+    - 0.0
+    - 0.0
+    - 0.0001
+    width: 4.0
+    height: 4.0
+    tier: 1
+  chiplet5:
+    logical:
+    - 0
+    - 1
+    - 1
+    physical_m:
+    - 0.0
+    - 4.0001
+    - 0.0001
+    width: 4.0
+    height: 4.0
+    tier: 1
+  chiplet6:
+    logical:
+    - 1
+    - 0
+    - 1
+    physical_m:
+    - 4.0001
+    - 0.0
+    - 0.0001
+    width: 4.0
+    height: 4.0
+    tier: 1
+  chiplet7:
+    logical:
+    - 1
+    - 1
+    - 1
+    physical_m:
+    - 4.0001
+    - 4.0001
+    - 0.0001
+    width: 4.0
+    height: 4.0
+    tier: 1
+distances:
+  chiplet0-chiplet1:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0
+  chiplet0-chiplet2:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0
+  chiplet0-chiplet3:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet0-chiplet4:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 0.0
+    stack_overlap_m2: 16.0
+  chiplet0-chiplet5:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet0-chiplet6:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet0-chiplet7:
+    logical: 1.7320508075688772
+    physical_m: 0.0017320508075688772
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet1-chiplet2:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet1-chiplet3:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0
+  chiplet1-chiplet4:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet1-chiplet5:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 0.0
+    stack_overlap_m2: 16.0
+  chiplet1-chiplet6:
+    logical: 1.7320508075688772
+    physical_m: 0.0017320508075688772
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet1-chiplet7:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet2-chiplet3:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0
+  chiplet2-chiplet4:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet2-chiplet5:
+    logical: 1.7320508075688772
+    physical_m: 0.0017320508075688772
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet2-chiplet6:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 0.0
+    stack_overlap_m2: 16.0
+  chiplet2-chiplet7:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet3-chiplet4:
+    logical: 1.7320508075688772
+    physical_m: 0.0017320508075688772
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet3-chiplet5:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet3-chiplet6:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet3-chiplet7:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 0.0
+    stack_overlap_m2: 16.0
+  chiplet4-chiplet5:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0
+  chiplet4-chiplet6:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0
+  chiplet4-chiplet7:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet5-chiplet6:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet5-chiplet7:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0
+  chiplet6-chiplet7:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 4.0
+    stack_overlap_m2: 0.0

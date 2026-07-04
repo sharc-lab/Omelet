@@ -1,0 +1,13 @@
+diff --git a/src/mem/ruby/network/BasicLink.py b/src/mem/ruby/network/BasicLink.py
+index a275d9b..d3ab142 100644
+--- a/src/mem/ruby/network/BasicLink.py
++++ b/src/mem/ruby/network/BasicLink.py
+@@ -35,6 +35,8 @@ class BasicLink(SimObject):
+ 
+     link_id = Param.Int("ID in relation to other links")
+     latency = Param.Cycles(1, "latency")
++    serdes_latency = Param.Cycles(0, "serdes latency component")
++    is_off_chip = Param.Bool(False, "true if off chiplet")
+     # Width of the link in bytes
+     # Only used by simple network.
+     # Garnet models this by flit size

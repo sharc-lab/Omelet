@@ -1,0 +1,13 @@
+techNode: 45
+clock: 3
+
+Bonding:
+  type: Cu-Cu
+  pitch: 30
+  infill: Epoxy
+
+Via:
+  tsv_pitch: 6.0e-6
+  tsv_ar: 15
+  tsv_contact_resistance: 0.1
+  tsv_ild_thickness: 2.0e-7

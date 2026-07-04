@@ -1,0 +1,7 @@
+# Runtime dependencies (mirror of pyproject.toml [project.dependencies])
+pyyaml
+numpy
+matplotlib
+
+# Development tooling
+pre-commit==2.20.0

@@ -1,0 +1,31 @@
+# =============================================================================
+# Omelet technology library -- interposer link ENERGY-PER-BIT (EPB) table
+# -----------------------------------------------------------------------------
+#   Interposer material : Silicon interposer; SiO2 (damascene RDL, stripline)
+#   RDL wire pitch      : 3 um, 1 RDL layer; 45 nm-class driver
+#   Bonding type        : Solder ball, ~30 um bond pitch
+#   Units               : pJ/bit (picojoules per bit)
+#   Index               : interposer link-length bucket; key len_<N>mm = N mm hop
+#   Provenance          : Technology parameters extracted offline via full-wave EM
+#                         (Ansys HFSS) + SPICE, per Omelet section IV-B; indexed by
+#                         interposer link length. NOT recomputed during simulation.
+# =============================================================================
+metadata:
+  quantity: energy_per_bit
+  units: pJ/bit
+  interposer_material: silicon
+  dielectric: SiO2
+  rdl_wire_pitch_um: 3
+  rdl_layers: 1
+  bonding: solder
+  bond_pitch_um: 30
+  index: interposer_link_length_mm
+  operating_freq_ghz: 3
+  extraction: "Ansys HFSS full-wave EM + SPICE (offline; Omelet section IV-B)"
+
+# Interposer energy-per-bit [pJ/bit] vs link-length bucket [mm]
+len_1mm: 0.55
+len_2mm: 0.810
+len_3mm: 0.929
+len_4mm: 0.945
+len_5mm: 0.926

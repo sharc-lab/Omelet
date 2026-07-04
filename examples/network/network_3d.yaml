@@ -1,0 +1,41 @@
+onchip_width: 128
+flit_bits: 128
+top_vc: 4
+ext_latency: 1
+noi_bitwidth: 24
+noc_bitwidth: 24
+d2d_aware: "no"
+
+noi_link_length_m: 0.0022 
+
+noc_routers_per_chiplet:
+  chiplet0: 16
+  chiplet1: 16
+  chiplet2: 16
+  chiplet3: 16
+  chiplet4: 16
+  chiplet5: 16
+  chiplet6: 16
+  chiplet7: 16
+
+cores_per_chiplet:
+  chiplet0: 16
+  chiplet1: 16
+  chiplet2: 16
+  chiplet3: 16
+  chiplet4: 16
+  chiplet5: 16
+  chiplet6: 16
+  chiplet7: 16
+
+router_latency:
+  chiplets:
+    chiplet0: 4
+    chiplet1: 4
+    chiplet2: 4
+    chiplet3: 4
+    chiplet4: 4
+    chiplet5: 4
+    chiplet6: 4
+    chiplet7: 4
+  interposer: 4

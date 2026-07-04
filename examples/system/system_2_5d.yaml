@@ -1,0 +1,7 @@
+clock_ghz: 3
+latency_quantum_ps: 50
+
+chiplet_clock: 3GHz
+noi_clock: 3GHz
+mem_clock: 3GHz
+sys_voltage: "1.0"

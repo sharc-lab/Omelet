@@ -1,0 +1,84 @@
+pitch_m: 0.001
+chiplet_keepout: 1.0e-04
+rows: 2
+cols: 2
+chiplets:
+  chiplet0:
+    logical:
+    - 0
+    - 0
+    - 0
+    physical_m:
+    - 0.0
+    - 0.0
+    - 0.0
+    width: 8.0
+    height: 8.0
+    tier: 0
+  chiplet1:
+    logical:
+    - 0
+    - 1
+    - 0
+    physical_m:
+    - 0.0
+    - 8.0001
+    - 0.0
+    width: 8.0
+    height: 8.0
+    tier: 0
+  chiplet2:
+    logical:
+    - 1
+    - 0
+    - 0
+    physical_m:
+    - 8.0001
+    - 0.0
+    - 0.0
+    width: 8.0
+    height: 8.0
+    tier: 0
+  chiplet3:
+    logical:
+    - 1
+    - 1
+    - 0
+    physical_m:
+    - 8.0001
+    - 8.0001
+    - 0.0
+    width: 8.0
+    height: 8.0
+    tier: 0
+distances:
+  chiplet0-chiplet1:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 8.0
+    stack_overlap_m2: 0.0
+  chiplet0-chiplet2:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 8.0
+    stack_overlap_m2: 0.0
+  chiplet0-chiplet3:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet1-chiplet2:
+    logical: 1.4142135623730951
+    physical_m: 0.0014142135623730952
+    side_overlap_m: 0.0
+    stack_overlap_m2: 0.0
+  chiplet1-chiplet3:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 8.0
+    stack_overlap_m2: 0.0
+  chiplet2-chiplet3:
+    logical: 1.0
+    physical_m: 0.001
+    side_overlap_m: 8.0
+    stack_overlap_m2: 0.0
